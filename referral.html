@@ -1,5 +1,31 @@
-{% extends "base.html" %}{% block title %}Referral • DIWALI OFFERS{% endblock %}
+{% extends "base.html" %}
+{% block title %}Referral • DIWALI OFFERS{% endblock %}
+
 {% block content %}
-<div class="section-head"><div><div class="eyebrow">SHARE THE FESTIVE SPIRIT</div><h1>Referral</h1></div><span class="pill">SIMULATION</span></div>
-<div class="referral-card"><div class="ref-icon">♧</div><h2>Your referral code</h2><div class="ref-code" id="refcode">{{ user['referral_code'] }}</div><button class="btn primary" onclick="copyReferral()">Copy Code</button><p class="muted">The original sample concept mentioned ₹200 per referral codes are for display cash or reward is credited.</p></div>
+<div class="section-head">
+  <div>
+    <div class="eyebrow">SHARE THE FESTIVE SPIRIT</div>
+    <h1>Referral</h1>
+  </div>
+  <span class="pill">₹200 PER REFERRAL</span>
+</div>
+
+<div class="referral-card">
+  <div class="ref-icon">♧</div>
+  <h2>Earn ₹200 Per Referral</h2>
+  <p class="muted">Share your unique code or direct link with friends and earn ₹200 sample bonus per referral!</p>
+  
+  <!-- Unique & Styled Referral Code -->
+  <div class="ref-code" id="refcode">DIWALI2026-{{ user['mobile'][-4:] }}</div>
+  <button class="btn primary" onclick="copyReferral()">Copy Code</button>
+
+  <br><br>
+
+  <!-- Direct Site Link with Referral Parameter -->
+  <label class="muted" style="display:block; margin-bottom:5px;">Direct Share Link:</label>
+  <input type="text" readonly value="https://bigdiwali-com-1.onrender.com/register?ref=DIWALI2026-{{ user['mobile'][-4:] }}" style="width:100%; padding:8px; text-align:center; margin-bottom:10px; border-radius:6px; border:1px solid #ccc;" id="reflink">
+  <button class="btn success" onclick="navigator.clipboard.writeText('https://bigdiwali-com-1.onrender.com/register?ref=DIWALI2026-{{ user['mobile'][-4:] }}'); alert('Referral link copied!');">Copy Link</button>
+
+  <p class="muted" style="margin-top:15px;">₹200 sample reward is credited when your friends join using your link or code!</p>
+</div>
 {% endblock %}
