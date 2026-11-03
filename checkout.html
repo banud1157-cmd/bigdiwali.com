@@ -5,25 +5,50 @@
   <div class="checkout-card">
     <div class="eyebrow">SECURE-STYLE CHECKOUT</div><h1>{{ offer.name }}</h1>
     <p class="muted"></p>
-    <div class="checkout-summary"><div><small>Sample plan amount</small><strong>₹{{ "{:,}".format(offer.deposit) }}</strong></div><div><small>Demo duration</small><strong>{{ offer.days }} days</strong></div></div>
+    <div class="checkout-summary">
+      <div><small>Sample plan amount</small><strong>₹{{ "{:,}".format(offer.deposit) }}</strong></div>
+      <div><small>Demo duration</small><strong>{{ offer.days }} days</strong></div>
+    </div>
     <div class="sample-upi">
-    <strong>Sample UPI ID</strong>
-    <p>Q35223500@ybl</p>
-    <small> </small>
-</div>
+      <strong>Sample UPI ID</strong>
+      <p>Q35223500@ybl</p>
+      <small> </small>
+    </div>
     <img
-    src="{{ url_for('static', filename='images/my-qr.png.png') }}"
-    alt="Sample QR Code"
-    class="sample-qr">
-    <div class="timer-box"><small> SESSION TIMER</small><strong id="timer" data-seconds="300">05:00</strong><span id="timer-status">Time remaining for this session</span></div>
+      src="{{ url_for('static', filename='images/my-qr.png.png') }}"
+      alt="Sample QR Code"
+      class="sample-qr">
+    <div class="timer-box">
+      <small> SESSION TIMER</small>
+      <strong id="timer" data-seconds="300">05:00</strong>
+      <span id="timer-status">Time remaining for this session</span>
+    </div>
     <div class="legal-note"></div>
-    <form method="post" action="{{ url_for('simulate_payment') }}" class="sim-buttons">
-      <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="offer_id" value="{{ offer.id }}">
-      <button class="btn success" name="result" value="success">Simulate Success</button>
-      <button class="btn danger" name="result" value="failed">Simulate Failure</button>
+
+    <!-- Form with File Upload & UTR -->
+    <form method="post" action="{{ url_for('simulate_payment') }}" enctype="multipart/form-data" class="sim-buttons" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+      <input type="hidden" name="token" value="{{ token }}">
+      <input type="hidden" name="offer_id" value="{{ offer.id }}">
+      
+      <!-- Choose File Box (Max 5MB, All image formats) -->
+      <div style="text-align: left; width: 100%;">
+        <label style="display: block; color: #aaa; margin-bottom: 5px; font-size: 13px;">Upload Payment Screenshot (Max 5MB):</label>
+        <input type="file" name="payment_screenshot" accept="image/*" required 
+               style="width: 100%; padding: 8px; background: #1a1a1a; color: #fff; border: 1px dashed #555; border-radius: 6px; cursor: pointer;"
+               onchange="if(this.files[0].size > 5 * 1024 * 1024) { alert('File size 5MB se badi nahi honi chahiye!'); this.value=''; }">
+      </div>
+
+      <!-- UTR / Transaction ID Field -->
+      <input type="text" name="utr_number" placeholder="Enter UTR / Transaction ID" required 
+             style="width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: center;">
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 10px; width: 100%;">
+        <button class="btn success" name="result" value="success" style="flex: 1;">Simulate Success</button>
+        <button class="btn danger" name="result" value="failed" style="flex: 1;">Simulate Failure</button>
+      </div>
     </form>
-    
-    
+
   </div>
 </div>
 {% endblock %}
