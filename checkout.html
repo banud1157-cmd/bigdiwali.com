@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% block title %}Demo Checkout • DIWALI OFFERS{% endblock %}
+{% block content %}
+<div class="checkout-wrap">
+  <a class="back-link" href="{{ url_for('dashboard') }}">← Back to offers</a>
+  <div class="checkout-card">
+    <div class="eyebrow">SECURE-STYLE CHECKOUT</div><h1>{{ offer.name }}</h1>
+    <p class="muted"></p>
+    <div class="checkout-summary"><div><small>Sample plan amount</small><strong>₹{{ "{:,}".format(offer.deposit) }}</strong></div><div><small>Demo duration</small><strong>{{ offer.days }} days</strong></div></div>
+    <div class="sample-upi">
+    <strong>Sample UPI ID</strong>
+    <p>Q35223500@ybl</p>
+    <small> </small>
+</div>
+    <img
+    src="{{ url_for('static', filename='images/my-qr.png.png') }}"
+    alt="Sample QR Code"
+    class="sample-qr">
+    <div class="timer-box"><small> SESSION TIMER</small><strong id="timer" data-seconds="300">05:00</strong><span id="timer-status">Time remaining for this session</span></div>
+    <div class="legal-note"></div>
+    <form method="post" action="{{ url_for('simulate_payment') }}" class="sim-buttons">
+      <input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="offer_id" value="{{ offer.id }}">
+      <button class="btn success" name="result" value="success">Simulate Success</button>
+      <button class="btn danger" name="result" value="failed">Simulate Failure</button>
+    </form>
+    
+    
+  </div>
+</div>
+{% endblock %}

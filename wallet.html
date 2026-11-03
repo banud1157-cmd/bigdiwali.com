@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %} Wallet • DIWALI OFFERS{% endblock %}
+{% block content %}
+<div class="section-head"><div><div class="eyebrow">YOUR SAMPLE ACCOUNT</div><h1>My Wallet</h1></div><span class="pill"> WALLET</span></div>
+<div class="wallet-hero"><small>AVAILABLE CREDITS</small><strong>₹{{ "{:,}".format(user['demo_wallet']) }}</strong><p></p></div>
+<div class="section-head"><div><h2>My Subscriptions</h2></div></div>
+<div class="table-card">
+{% if subscriptions %}
+{% for sub in subscriptions %}<div class="history-row"><div><b>{{ sub['offer_name'] }}</b><small>{{ sub['created_at'] }}</small></div><span class="pill success-pill">{{ sub['status'] }}</span></div>{% endfor %}
+{% else %}<div class="empty"> Visit the home page to test an offer.</div>{% endif %}
+</div>
+<div class="section-head"><div><h2>Transaction History</h2></div></div>
+<div class="table-card">
+{% if transactions %}
+{% for txn in transactions %}<div class="history-row"><div><b>{{ txn['description'] }}</b><small>{{ txn['created_at'] }}</small></div><div class="history-right"><strong>₹{{ "{:,}".format(txn['amount']) }}</strong><small>{{ txn['status'] }}</small></div></div>{% endfor %}
+{% else %}<div class="empty">No demo transactions recorded.</div>{% endif %}
+</div>
+{% endblock %}
+<a class="btn success" href="{{ url_for('withdraw') }}">
+   Withdrawal
+</a>

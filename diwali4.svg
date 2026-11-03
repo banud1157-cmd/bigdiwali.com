@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
+<defs><radialGradient id="g"><stop stop-color="#ffd16a" stop-opacity=".5"/><stop offset="1" stop-color="#572b2d" stop-opacity="0"/></radialGradient></defs>
+<rect width="900" height="420" fill="#572b2d"/><circle cx="690" cy="180" r="260" fill="url(#g)"/>
+<g fill="#ffd16a" opacity=".8"><circle cx="110" cy="70" r="4"/><circle cx="240" cy="140" r="3"/><circle cx="790" cy="70" r="5"/><circle cx="600" cy="330" r="4"/><circle cx="440" cy="70" r="3"/><circle cx="820" cy="300" r="3"/></g>
+<g stroke="#ffd16a" stroke-width="3" fill="none" opacity=".8"><path d="M690 70v-28m0 56v28m-28-28h-28m56 0h28m-48-20-20-20m40 40 20 20m0-40 20-20m-40 40-20 20"/><path d="M180 230v-22m0 44v22m-22-22h-22m44 0h22m-37-15-15-15m30 30 15 15m0-30 15-15m-30 30-15 15"/></g>
+<text x="55" y="190" fill="#ffd16a" font-family="Georgia,serif" font-size="52" font-weight="bold">DOUBLE DHAMAKA</text>
+<text x="58" y="245" fill="#fff1d1" font-family="Arial,sans-serif" font-size="22" letter-spacing="7">FESTIVE DEMO EXPERIENCE</text>
+<text x="760" y="370" fill="#ffd16a" font-size="48">✺</text></svg>

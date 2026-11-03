@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block title %}Register • DIWALI OFFERS{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="auth-art"><div class="eyebrow">JOIN THE CELEBRATION</div><h1>Your Festive<br><span>Journey Starts.</span></h1><p>Create a local profile and explore the website.</p><div class="spark">✦ ✧ ✦</div></div>
+  <div class="auth-card"><div class="eyebrow">REGISTRATION OPEN • 01-10-2026</div><h2>Create account</h2><p class="muted">All fields are stored only in your Money Earn.</p>
+    <form method="post">
+      <label>Full Name</label><input name="name" placeholder="Enter your name" required minlength="2">
+      <label>Mobile Number</label><input name="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" required>
+      <label>Password</label><input type="password" name="password" placeholder="Minimum 6 characters" required minlength="6">
+      <label>Referral Code <span class="muted">(optional)</span></label><input name="referral" placeholder="Enter referral code">
+      <button class="btn primary full">Register Now</button>
+    </form>
+    <p class="center muted">Already registered? <a href="{{ url_for('login') }}">Login</a></p>
+  </div>
+</section>
+{% endblock %}
