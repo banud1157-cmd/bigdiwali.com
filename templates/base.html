@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}DIWALI OFFERS{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<div class="demo-strip">   REAL MONEY • REAL PAYMENTS</div>
+<div class="demo-strip">    REAL MONEY • REAL PAYMENTS</div>
 <header class="topbar">
   <a class="brand" href="{{ url_for('dashboard') if current_user else url_for('login') }}"><span class="brand-icon">✦</span> DIWALI <b>OFFERS</b></a>
   {% if current_user %}
@@ -20,5 +20,5 @@
   {% block content %}{% endblock %}
 </main>
 <footer></footer>
-<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
 </body></html>
