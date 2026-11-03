@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+{% block title %}Admin Login • DIWALI OFFERS{% endblock %}
+{% block content %}
+<div class="checkout-wrap">
+  <div class="checkout-card">
+    <div class="eyebrow">ADMIN PANEL</div>
+    <h1>Admin Login</h1>
+    <form method="POST" action="{{ url_for('admin_login') }}">
+      <label>Username</label>
+      <input type="text" name="username" required>
+
+      <label>Password</label>
+      <input type="password" name="password" required>
+
+      <button class="btn success" type="submit">Login as Admin</button>
+    </form>
+    <p class="muted">Authorized admin only • Demo system</p>
+  </div>
+</div>
+{% endblock %}

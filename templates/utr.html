@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+{% block title %}Submit UTR • DIWALI OFFERS{% endblock %}
+
+{% block content %}
+<div class="checkout-wrap">
+  <div class="checkout-card">
+    <div class="eyebrow">UTR SUBMISSION</div>
+    <h1>Submit UTR Number</h1>
+
+    <p class="muted">
+      Offer: {{ offer.name }}
+    </p>
+
+    <form method="post" action="{{ url_for('submit_utr') }}">
+      <label for="utr">12 Digit UTR Number</label>
+
+      <input
+        type="text"
+        id="utr"
+        name="utr"
+        placeholder="Enter 12 digit UTR"
+        minlength="12"
+        maxlength="12"
+        pattern="[0-9]{12}"
+        inputmode="numeric"
+        required>
+
+      <button type="submit" class="btn success">
+        Submit UTR
+      </button>
+    </form>
+
+    <p class="muted">
+      Status: Verification Pending
+    </p>
+
+    <p class="muted">
+      
+    </p>
+  </div>
+</div>
+{% endblock %}

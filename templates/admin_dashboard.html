@@ -1,0 +1,141 @@
+
+{% extends "base.html" %}
+{% block title %}Admin Dashboard • DIWALI OFFERS{% endblock %}
+{% block content %}
+<div class="checkout-wrap">
+  <div class="checkout-card">
+    <div class="eyebrow">ADMIN CONTROL PANEL</div>
+    <h1>Admin Dashboard</h1>
+    <a class="back-link" href="{{ url_for('admin_logout') }}">Admin Logout</a>
+
+    <div class="checkout-summary">
+      <div><small>Total Users</small><strong>{{ total_users }}</strong></div>
+      <div><small>UTR Records</small><strong>{{ total_utrs }}</strong></div>
+    </div>
+
+    <div class="checkout-summary">
+      <div><small>Withdrawal Requests</small><strong>{{ total_withdrawals }}</strong></div>
+      <div><small>Transactions</small><strong>{{ total_transactions }}</strong></div>
+    </div>
+
+    <h2>Registered Users</h2>
+  
+<h2>Registered Users</h2>
+
+{% for user in users %}
+<div class="checkout-summary">
+    <div>
+        <strong>{{ user.name }}</strong>
+        <small>Mobile: {{ user.mobile }}</small>
+        <small>Referral: {{ user.referral_code }}</small>
+        <small>Joined: {{ user.created_at }}</small>
+        <strong>Wallet: ₹{{ user.demo_wallet }}</strong>
+        <small>User ID: #{{ user.id }}</small>
+    </div>
+
+    <form method="POST"
+          action="{{ url_for('admin_update_wallet', user_id=user.id) }}">
+
+        <label>Amount (₹)</label>
+        <input type="number"
+               name="amount"
+               placeholder="Amount"
+               min="1"
+               required>
+
+        <select name="action">
+            <option value="add">Add (+)</option>
+            <option value="deduct">Deduct (-)</option>
+        </select>
+
+        <button class="btn success" type="submit">
+            Update Wallet
+        </button>
+    </form>
+</div>
+{% else %}
+<p>No users found.</p>
+{% endfor %}
+
+
+    
+
+<h2>UTR Records</h2>
+
+{% for item in utrs %}
+<div class="checkout-summary">
+    <div>
+        <strong>{{ item.name }} ({{ item.mobile }})</strong>
+        <small>UTR: {{ item.utr }}</small>
+        <small>Offer: {{ item.offer_id }}</small>
+        <strong>Amount: ₹{{ item.amount }}</strong>
+        <small>Status: {{ item.status }}</small>
+        <small>{{ item.created_at }}</small>
+    </div>
+
+    <form method="POST"
+          action="{{ url_for('admin_update_utr', utr_id=item.id) }}">
+
+        <label>UTR Number</label>
+        <input type="text"
+               name="utr"
+               value="{{ item.utr }}"
+               maxlength="12"
+               required>
+
+        <label>Demo Amount (₹)</label>
+        <input type="number"
+               name="amount"
+               value="{{ item.amount }}"
+               min="0"
+               max="100000"
+               required>
+
+        <label>Status</label>
+        <select name="status">
+            <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
+            <option value="VERIFIED" {% if item.status == 'VERIFIED' %}selected{% endif %}>Verified</option>
+            <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+        </select>
+
+        <button class="btn success" type="submit">
+            Save Changes
+        </button>
+    </form>
+</div>
+{% else %}
+<p>No UTR records found.</p>
+{% endfor %}
+
+
+
+    <h2> Withdrawal Requests</h2>
+    {% for item in withdrawals %}
+      <div class="checkout-summary">
+        <div>
+          <strong>{{ item.name }} ({{ item.mobile }})</strong>
+          <strong>₹{{ item.amount }}</strong>
+          <small>Note: {{ item.note or 'None' }}</small>
+          <small>Status: {{ item.status }}</small>
+          <small>{{ item.created_at }}</small>
+        </div>
+        <form method="POST"
+              action="{{ url_for('admin_update_withdrawal', request_id=item.id) }}">
+          <select name="status">
+            <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
+            <option value="APPROVED" {% if item.status == 'APPROVED' %}selected{% endif %}>Approved</option>
+            <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+          </select>
+          <button class="btn success" type="submit">Update</button>
+        </form>
+      </div>
+    {% else %}
+      <p>No withdrawal requests found.</p>
+    {% endfor %}
+
+    <p class="muted">
+      Demo only: Approved status does not transfer money or verify a real payment.
+    </p>
+  </div>
+</div>
+{% endblock %}

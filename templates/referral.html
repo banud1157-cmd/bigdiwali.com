@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Referral • DIWALI OFFERS{% endblock %}
+{% block content %}
+<div class="section-head"><div><div class="eyebrow">SHARE THE FESTIVE SPIRIT</div><h1>Referral</h1></div><span class="pill">SIMULATION</span></div>
+<div class="referral-card"><div class="ref-icon">♧</div><h2>Your referral code</h2><div class="ref-code" id="refcode">{{ user['referral_code'] }}</div><button class="btn primary" onclick="copyReferral()">Copy Code</button><p class="muted">The original sample concept mentioned ₹200 per referral codes are for display cash or reward is credited.</p></div>
+{% endblock %}

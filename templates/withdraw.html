@@ -1,0 +1,124 @@
+
+{% extends "base.html" %}
+{% block title %} Withdrawal • DIWALI OFFERS{% endblock %}
+{% block content %}
+<div class="checkout-wrap">
+  <div class="checkout-card">
+    <div class="eyebrow"> WALLET</div>
+    <h1>Withdrawal Request</h1>
+
+    <p class="muted">
+      
+    </p>
+
+    
+<form method="POST" action="{{ url_for('withdraw') }}">
+
+    <label for="account_holder">Account Holder Name</label>
+    <input
+        type="text"
+        id="account_holder"
+        name="account_holder"
+        maxlength="100"
+        placeholder="Enter account holder name"
+        required
+    >
+
+    <label for="bank_name">Select Bank</label>
+    <select id="bank_name" name="bank_name" required>
+        <option value="">Select Bank</option>
+        <option value="State Bank of India">State Bank of India</option>
+        <option value="Punjab National Bank">Punjab National Bank</option>
+        <option value="Bank of Baroda">Bank of Baroda</option>
+        <option value="Canara Bank">Canara Bank</option>
+        <option value="Union Bank of India">Union Bank of India</option>
+        <option value="Bank of India">Bank of India</option>
+        <option value="Indian Bank">Indian Bank</option>
+        <option value="Central Bank of India">Central Bank of India</option>
+        <option value="UCO Bank">UCO Bank</option>
+        <option value="Bank of Maharashtra">Bank of Maharashtra</option>
+        <option value="Punjab and Sind Bank">Punjab and Sind Bank</option>
+        <option value="HDFC Bank">HDFC Bank</option>
+        <option value="ICICI Bank">ICICI Bank</option>
+        <option value="Axis Bank">Axis Bank</option>
+        <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+        <option value="IndusInd Bank">IndusInd Bank</option>
+        <option value="IDBI Bank">IDBI Bank</option>
+        <option value="Yes Bank">Yes Bank</option>
+        <option value="Federal Bank">Federal Bank</option>
+        <option value="IDFC FIRST Bank">IDFC FIRST Bank</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <label for="account_number">Account Number</label>
+    <input
+        type="text"
+        id="account_number"
+        name="account_number"
+        inputmode="numeric"
+        minlength="9"
+        maxlength="18"
+        pattern="[0-9]{9,18}"
+        placeholder="Enter account number"
+        required
+    >
+
+    <label for="ifsc_code">IFSC Code</label>
+    <input
+        type="text"
+        id="ifsc_code"
+        name="ifsc_code"
+        maxlength="11"
+        pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}"
+        placeholder="Example: SBIN0001234"
+        required
+    >
+
+    <label for="amount">Select Withdrawal Amount (₹)</label>
+    <select id="amount" name="amount" required>
+        <option value="">Select Amount</option>
+        <option value="500">₹500</option>
+        <option value="1000">₹1,000</option>
+        <option value="2000">₹2,000</option>
+        <option value="5000">₹5,000</option>
+        <option value="10000">₹10,000</option>
+    </select>
+
+    <label for="note">Note (Optional)</label>
+    <input
+        type="text"
+        id="note"
+        name="note"
+        maxlength="200"
+        placeholder=" request note"
+    >
+
+    <button class="btn success" type="submit">
+        Submit  Request
+    </button>
+
+</form>
+
+
+    <h2>My Withdrawal Requests</h2>
+
+    {% for item in withdrawals %}
+      <div class="checkout-summary">
+        <div>
+          <small>Request #{{ item.id }}</small>
+          <strong>₹{{ item.amount }}</strong>
+        </div>
+        <div>
+          <small>Status</small>
+          <strong>{{ item.status }}</strong>
+        </div>
+      </div>
+      <p class="muted">{{ item.created_at }}</p>
+    {% else %}
+      <p class="muted">No withdrawal requests yet.</p>
+    {% endfor %}
+
+    <a class="back-link" href="{{ url_for('wallet') }}">← Back to Wallet</a>
+  </div>
+</div>
+{% endblock %}
