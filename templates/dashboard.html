@@ -1,30 +1,86 @@
-{% extends "base.html" %}{% block title %}Home • DIWALI OFFERS{% endblock %}
+{% extends "base.html" %}
+{% block title %}Home • DIWALI OFFERS{% endblock %}
+
 {% block content %}
-<section class="welcome-row"><div><div class="eyebrow">WELCOME TO THE FESTIVAL</div><h1>Hello, {{ user['name'] }} <span class="gold">✦</span></h1><p class="muted">Your dashboard is ready.</p></div><div class="wallet-chip"><small> WALLET</small><strong>₹{{ "{:,}".format(user['demo_wallet']) }}</strong><a href="{{ url_for('wallet') }}">View wallet →</a></div></section>
-<section class="hero-banner"><div class="hero-copy"><div class="eyebrow">LIGHTS • JOY • CELEBRATION</div><h2>Diwali Mega<br><span>Festive Offers</span></h2><p>Explore five interactive sample plans. Everything here is simulated.</p><a class="btn light" href="#offers">Explore Offers</a></div><div class="hero-orb">दीपावली<br><b>✦</b></div></section>
-<div class="section-head" id="offers"><div><div class="eyebrow">CHOOSE YOUR EXPERIENCE</div><h2>Diwali Offers</h2></div></span></div>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<section class="welcome-row">
+  <div>
+    <div class="eyebrow">WELCOME TO THE FESTIVAL</div>
+    <h1>Hello, {{ user['name'] }} <span class="gold">✦</span></h1>
+    <p class="muted">Your dashboard is ready.</p>
+  </div>
+  <div class="wallet-chip">
+    <small> WALLET</small>
+    <strong>₹{{ "{:,}".format(user['demo_wallet']) }}</strong>
+    <a href="{{ url_for('wallet') }}">View wallet →</a>
+  </div>
+</section>
+
+<section class="hero-banner">
+  <div class="hero-copy">
+    <div class="eyebrow">LIGHTS • JOY • CELEBRATION</div>
+    <h2>Diwali Mega<br><span>Festive Offers</span></h2>
+    <p>Explore five interactive sample plans. Everything here is simulated.</p>
+    <a class="btn light" href="#offers">Explore Offers</a>
+  </div>
+  <div class="hero-orb">दीपावली<br><b>✦</b></div>
+</section>
+
+<div class="section-head" id="offers">
+  <div>
+    <div class="eyebrow">CHOOSE YOUR EXPERIENCE</div>
+    <h2>Diwali Offers</h2>
+  </div>
+</div>
+
 <div class="offer-grid">
-
-
-
-{% for offer in offers %}
-<article class="offer-card">
-  <div class="offer-image {{ offer.id }}"><img src="{{ url_for('static', filename='images/' + offer.image) }}" alt="Diwali festive illustration"><span class="offer-tag">{{ offer.tag }}</span></div>
-  <div class="offer-body"><h3>{{ offer.name }}</h3><div class="amount-line"><div><small>Sample amount</small><strong>₹{{ "{:,}".format(offer.deposit) }}</strong></div><div class="daily"><small>Per days</small><strong>₹{{ "{:,}".format(offer.daily) }}</strong></div></div><div class="offer-meta"><span>{{ offer.days }} days</span><span>Valid plan</span></div><a class="btn primary full" href="{{ url_for('checkout', offer_id=offer.id) }}">View Demo Plan</a></div>
-</article>
-{% endfor %}
+  {% for offer in offers %}
+  <article class="offer-card">
+    <div class="offer-image {{ offer.id }}">
+      <img src="{{ url_for('static', filename='images/' + offer.image) }}" alt="Diwali festive illustration">
+      <span class="offer-tag">{{ offer.tag }}</span>
+    </div>
+    <div class="offer-body">
+      <h3>{{ offer.name }}</h3>
+      <div class="amount-line">
+        <div>
+          <small>Sample amount</small>
+          <strong>₹{{ "{:,}".format(offer.deposit) }}</strong>
+        </div>
+        <div class="daily">
+          <small>Per days</small>
+          <strong>₹{{ "{:,}".format(offer.daily) }}</strong>
+        </div>
+      </div>
+      <div class="offer-meta">
+        <span>{{ offer.days }} days</span>
+        <span>Valid plan</span>
+      </div>
+      <a class="btn primary full" href="{{ url_for('checkout', offer_id=offer.id) }}">View Demo Plan</a>
+    </div>
+  </article>
+  {% endfor %}
 </div>
   
 <div class="checkout-card">
     <h2>My Wallet</h2>
     <p>Manage your withdrawal requests.</p>
-
-    
     <a href="{{ url_for('withdraw') }}" class="btn success">
-         Withdrawal
+        Withdrawal
     </a>
 </div>
 
 <div class=""><strong></strong></div>
-<section class="bottom-grid"><a class="mini-panel" href="{{ url_for('wallet') }}"><span>◈</span><div><b>My Wallet</b><small>Sample balance & transaction history</small></div>→</a><a class="mini-panel" href="{{ url_for('referral') }}"><span>♧</span><div><b>Refer & Earn</b><small>Sample referral code and points</small></div>→</a></section>
+
+<section class="bottom-grid">
+  <a class="mini-panel" href="{{ url_for('wallet') }}">
+    <span>◈</span>
+    <div><b>My Wallet</b><small>Sample balance & transaction history</small></div>→
+  </a>
+  <a class="mini-panel" href="{{ url_for('referral') }}">
+    <span>♧</span>
+    <div><b>Refer & Earn</b><small>Sample referral code and points</small></div>→
+  </a>
+</section>
 {% endblock %}
