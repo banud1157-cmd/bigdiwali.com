@@ -1,32 +1,28 @@
-{% extends "base.html" %}{% block title %}
 {% extends "base.html" %}
 {% block title %}Login • DIWALI OFFERS 01-10-2026 To 30-10-2026{% endblock %}
 
 {% block content %}
-<!-- Yahan apni CSS link add karein agar base.html me nahi hai -->
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <section class="auth-wrap">
-  <div class="auth-art"><div class="eyebrow">THE FESTIVE EXPERIENCE</div><h1>Celebrate<br><span>Every Moment.</span></h1><p>Explore festive  offers, a sample wallet and interactive rewards.</p><div class="spark">✦ ✧ ✦</div></div>
-  <div class="auth-card"><div class="eyebrow">WELCOME BACK</div><h2>Login to your account</h2><p class="muted">Enter your account details.</p>
-    <form method="post"><label>Mobile Number</label><input name="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" required>
-    <label>Password</label><input type="password" name="password" placeholder="Your password" required>
-    <button class="btn primary full">Login</button></form>
-    <p class="center muted">New here? <a href="{{ url_for('register') }}">Create account</a></p>
-    
+  <div class="auth-art">
+    <div class="eyebrow">THE FESTIVE EXPERIENCE</div>
+    <h1>Celebrate<br><span>Every Moment.</span></h1>
+    <p>Explore festive offers, a sample wallet and interactive rewards.</p>
+    <div class="spark">✦ ✧ ✦</div>
   </div>
-</section>
-{% endblock %}
-Login • DIWALI OFFERS 01-10-2026 To 30-10-2026{% endblock %}
-{% block content %}
-<section class="auth-wrap">
-  <div class="auth-art"><div class="eyebrow">THE FESTIVE EXPERIENCE</div><h1>Celebrate<br><span>Every Moment.</span></h1><p>Explore festive  offers, a sample wallet and interactive rewards.</p><div class="spark">✦ ✧ ✦</div></div>
-  <div class="auth-card"><div class="eyebrow">WELCOME BACK</div><h2>Login to your account</h2><p class="muted">Enter your account details.</p>
-    <form method="post"><label>Mobile Number</label><input name="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" required>
-    <label>Password</label><input type="password" name="password" placeholder="Your password" required>
-    <button class="btn primary full">Login</button></form>
+  <div class="auth-card">
+    <div class="eyebrow">WELCOME BACK</div>
+    <h2>Login to your account</h2>
+    <p class="muted">Enter your account details.</p>
+    <form method="post">
+      <label>Mobile Number</label>
+      <input name="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" required>
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Your password" required>
+      <button class="btn primary full">Login</button>
+    </form>
     <p class="center muted">New here? <a href="{{ url_for('register') }}">Create account</a></p>
-    
   </div>
 </section>
 {% endblock %}
