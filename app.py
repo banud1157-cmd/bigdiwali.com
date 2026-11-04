@@ -403,7 +403,6 @@ def simulate_payment():
     flash("Demo payment failed. Wallet update nahi hua.", "error")
     return redirect(url_for("wallet"))
 
-
 @app.route("/submit-utr", methods=["GET", "POST"])
 @login_required
 def submit_utr():
@@ -465,7 +464,6 @@ def submit_utr():
 
     return render_template("utr.html", offer=offer)
 
-        
         with db() as con:
             con.execute(
                 """INSERT INTO utr_submissions
@@ -490,7 +488,6 @@ def submit_utr():
         return redirect(url_for("wallet"))
 
     return render_template("utr.html", offer=offer)
-
 
 @app.route("/referral")
 @login_required
