@@ -1,9 +1,8 @@
-
 {% extends "base.html" %}
 {% block title %}Admin Dashboard • DIWALI OFFERS{% endblock %}
 {% block content %}
 <div class="checkout-wrap">
-  <div class="checkout-card">
+  <div class="checkout-card" style="max-width: 900px; width: 100%;">
     <div class="eyebrow">ADMIN CONTROL PANEL</div>
     <h1>Admin Dashboard</h1>
     <a class="back-link" href="{{ url_for('admin_logout') }}">Admin Logout</a>
@@ -18,122 +17,90 @@
       <div><small>Transactions</small><strong>{{ total_transactions }}</strong></div>
     </div>
 
-    <h2>Registered Users</h2>
-  
-<h2>Registered Users</h2>
+    <h2>Registered Users & Wallet Control</h2>
 
-{% for user in users %}
-<div class="checkout-summary">
-    <div>
-        <strong>{{ user.name }}</strong>
-        <small>Mobile: {{ user.mobile }}</small>
-        <small>Referral: {{ user.referral_code }}</small>
-        <small>Joined: {{ user.created_at }}</small>
-        <strong>Wallet: ₹{{ user.demo_wallet }}</strong>
-        <small>User ID: #{{ user.id }}</small>
-    </div>
-
-    <form method="POST"
-          action="{{ url_for('admin_update_wallet', user_id=user.id) }}">
-
-        <label>Amount (₹)</label>
-        <input type="number"
-               name="amount"
-               placeholder="Amount"
-               min="1"
-               required>
-
-        <select name="action">
-            <option value="add">Add (+)</option>
-            <option value="deduct">Deduct (-)</option>
-        </select>
-
-        <button class="btn success" type="submit">
-            Update Wallet
-        </button>
-    </form>
-</div>
-{% else %}
-<p>No users found.</p>
-{% endfor %}
-
-
-    
-
-<h2>UTR Records</h2>
-
-{% for item in utrs %}
-<div class="checkout-summary">
-    <div>
-        <strong>{{ item.name }} ({{ item.mobile }})</strong>
-        <small>UTR: {{ item.utr }}</small>
-        <small>Offer: {{ item.offer_id }}</small>
-        <strong>Amount: ₹{{ item.amount }}</strong>
-        <small>Status: {{ item.status }}</small>
-        <small>{{ item.created_at }}</small>
-    </div>
-
-    <form method="POST"
-          action="{{ url_for('admin_update_utr', utr_id=item.id) }}">
-
-        <label>UTR Number</label>
-        <input type="text"
-               name="utr"
-               value="{{ item.utr }}"
-               maxlength="12"
-               required>
-
-        <label>Demo Amount (₹)</label>
-        <input type="number"
-               name="amount"
-               value="{{ item.amount }}"
-               min="0"
-               max="100000"
-               required>
-
-        <label>Status</label>
-        <select name="status">
-            <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
-            <option value="VERIFIED" {% if item.status == 'VERIFIED' %}selected{% endif %}>Verified</option>
-            <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
-        </select>
-
-        <button class="btn success" type="submit">
-            Save Changes
-        </button>
-    </form>
-</div>
-{% else %}
-<p>No UTR records found.</p>
-{% endfor %}
-
-
-
-    <h2> Withdrawal Requests</h2>
-    {% for item in withdrawals %}
-      <div class="checkout-summary">
+    {% for user in users %}
+    <div class="checkout-summary" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; background: #1a1a1a; padding: 15px; border-radius: 8px;">
         <div>
-          <strong>{{ item.name }} ({{ item.mobile }})</strong>
-          <strong>₹{{ item.amount }}</strong>
-          <small>Note: {{ item.note or 'None' }}</small>
-          <small>Status: {{ item.status }}</small>
-          <small>{{ item.created_at }}</small>
+            <strong style="font-size: 16px; color: #fff;">{{ user.name }}</strong><br>
+            <small style="color: #aaa;">Mobile: {{ user.mobile }}</small><br>
+            <small style="color: #aaa;">Referral: {{ user.referral_code }}</small><br>
+            <small style="color: #aaa;">Joined: {{ user.created_at }}</small><br>
+            <strong style="color: #ffc107;">Wallet: ₹{{ user.demo_wallet }}</strong><br>
+            <small style="color: #888;">User ID: #{{ user.id }}</small>
         </div>
-        <form method="POST"
-              action="{{ url_for('admin_update_withdrawal', request_id=item.id) }}">
-          <select name="status">
+
+        <form method="POST" action="{{ url_for('admin_update_wallet', user_id=user.id) }}" style="display: flex; gap: 8px; align-items: center;">
+            <input type="number" name="amount" placeholder="Amount" min="1" required style="width: 100px; padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+            <select name="action" style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+                <option value="add">Add (+)</option>
+                <option value="deduct">Deduct (-)</option>
+            </select>
+            <button class="btn success" type="submit" style="padding: 6px 12px;">Update Wallet</button>
+        </form>
+    </div>
+    {% else %}
+    <p>No users found.</p>
+    {% endfor %}
+
+    <h2>UTR Records</h2>
+
+    {% for item in utrs %}
+    <div class="checkout-summary" style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <div style="margin-bottom: 10px;">
+            <strong style="color: #fff;">{{ item.name }} ({{ item.mobile }})</strong><br>
+            <small style="color: #aaa;">UTR: {{ item.utr }}</small><br>
+            <small style="color: #aaa;">Offer: {{ item.offer_id }}</small><br>
+            <strong style="color: #ffc107;">Amount: ₹{{ item.amount }}</strong><br>
+            <small style="color: #28a745;">Status: {{ item.status }}</small><br>
+            <small style="color: #888;">{{ item.created_at }}</small>
+        </div>
+
+        <form method="POST" action="{{ url_for('admin_update_utr', utr_id=item.id) }}" style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="color: #aaa; font-size: 12px;">UTR Number</label>
+            <input type="text" name="utr" value="{{ item.utr }}" maxlength="12" required style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+            
+            <label style="color: #aaa; font-size: 12px;">Demo Amount (₹)</label>
+            <input type="number" name="amount" value="{{ item.amount }}" min="0" max="100000" required style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+            
+            <label style="color: #aaa; font-size: 12px;">Status</label>
+            <select name="status" style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+                <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                <option value="VERIFIED" {% if item.status == 'VERIFIED' %}selected{% endif %}>Verified</option>
+                <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+            </select>
+
+            <button class="btn success" type="submit" style="margin-top: 5px;">Save Changes</button>
+        </form>
+    </div>
+    {% else %}
+    <p>No UTR records found.</p>
+    {% endfor %}
+
+    <h2>Withdrawal Requests</h2>
+    {% for item in withdrawals %}
+      <div class="checkout-summary" style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <strong style="color: #fff;">{{ item.name }} ({{ item.mobile }})</strong><br>
+          <strong style="color: #ffc107;">₹{{ item.amount }}</strong><br>
+          <small style="color: #aaa;">Note: {{ item.note or 'None' }}</small><br>
+          <small style="color: #28a745;">Status: {{ item.status }}</small><br>
+          <small style="color: #888;">{{ item.created_at }}</small>
+        </div>
+        <form method="POST" action="{{ url_for('admin_update_withdrawal', request_id=item.id) }}" style="display: flex; gap: 8px; align-items: center;">
+          <select name="status" style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
             <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
             <option value="APPROVED" {% if item.status == 'APPROVED' %}selected{% endif %}>Approved</option>
             <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
           </select>
-          <button class="btn success" type="submit">Update</button>
+          <button class="btn success" type="submit" style="padding: 6px 12px;">Update</button>
         </form>
       </div>
     {% else %}
       <p>No withdrawal requests found.</p>
     {% endfor %}
 
-    <p class="muted">
+    <p class="muted" style="margin-top: 20px;">
       Demo only: Approved status does not transfer money or verify a real payment.
     </p>
   </div>
