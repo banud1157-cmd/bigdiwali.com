@@ -1,32 +1,40 @@
+
 {% extends "base.html" %}
 {% block title %}Referral • DIWALI OFFERS{% endblock %}
 
 {% block content %}
 <div class="section-head">
-  <div>
-    <div class="eyebrow">SHARE THE FESTIVE SPIRIT</div>
-    <h1>Referral</h1>
-  </div>
-  <span class="pill">SIMULATION</span>
+    <div>
+        <div class="eyebrow">SHARE THE FESTIVE SPIRIT</div>
+        <h1>Referral</h1>
+    </div>
+    <span class="pill">SIMULATION</span>
 </div>
 
 <div class="referral-card">
-  <div class="ref-icon">♧</div>
-  <h2>Your referral code & link</h2>
-  
-  <p class="muted">Share your unique code or direct link with friends:</p>
-  
-  <!-- Unique & Styled Referral Code -->
-  <div class="ref-code" id="refcode">DIWALI2026-{{ user['mobile'][-4:] }}</div>
-  <button class="btn primary" onclick="copyReferral()">Copy Code</button>
+    <div class="ref-icon">♧</div>
+    <h2>Your Referral Code</h2>
 
-  <br><br>
+    <div class="ref-code" id="refcode">
+        {{ user['referral_code'] }}
+    </div>
 
-  <!-- Direct Site Link with Referral Parameter -->
-  <label class="muted" style="display:block; margin-bottom:5px;">Direct Share Link:</label>
-  <input type="text" readonly value="https://bigdiwali-com-1.onrender.com/register?ref=DIWALI2026-{{ user['mobile'][-4:] }}" style="width:100%; padding:8px; text-align:center; margin-bottom:10px; border-radius:6px; border:1px solid #ccc;" id="reflink">
-  <button class="btn success" onclick="navigator.clipboard.writeText('https://bigdiwali-com-1.onrender.com/register?ref=DIWALI2026-{{ user['mobile'][-4:] }}'); alert('Referral link copied!');">Copy Link</button>
+    <button class="btn primary" type="button" onclick="copyReferral()">
+        Copy Code
+    </button>
 
-  <p class="muted" style="margin-top:15px;">Earn sample rewards when your friends join using your link or code!</p>
+    <p class="muted">
+       The original sample concept mentioned ₹300 per referral codes are for display cash or reward is credited.
+    </p>
 </div>
+
+<script>
+function copyReferral() {
+    const code = document.getElementById("refcode").innerText.trim();
+
+    navigator.clipboard.writeText(code)
+        .then(() => alert("Referral code copied!"))
+        .catch(() => alert("Copy failed. Please copy manually."));
+}
+</script>
 {% endblock %}
