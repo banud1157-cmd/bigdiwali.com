@@ -5,12 +5,12 @@
     <div class="eyebrow">YOUR SAMPLE ACCOUNT</div>
     <h1>My Wallet</h1>
   </div>
-  <span class="pill"> WALLET</span>
+  <span class="pill">WALLET</span>
 </div>
 
 <div class="wallet-hero">
   <small>AVAILABLE CREDITS</small>
-  <strong>₹{{ "{:,}".format(user['demo_wallet']) }}</strong>
+  <strong>₹{{ "{:,}".format(user['demo_wallet'] if 'demo_wallet' in user else 1200) }}</strong>
   <p style="margin-top: 10px;">
     <a class="btn success" href="{{ url_for('withdraw') }}" style="display: inline-block; padding: 6px 15px; text-decoration: none; border-radius: 4px;">Withdrawal</a>
   </p>
@@ -18,27 +18,33 @@
 
 <div class="section-head"><div><h2>My Subscriptions</h2></div></div>
 <div class="table-card">
-{% if subscriptions %}
+{% if subscriptions and subscriptions|length > 0 %}
   {% for sub in subscriptions %}
-  <div class="history-row">
+  <div class="history-row" style="background: #252238; padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #ffc107; display: flex; justify-content: space-between; align-items: center;">
     <div>
-      <b>{{ sub['offer_name'] }}</b>
-      <small>{{ sub['created_at'] }}</small>
+      <b style="font-size: 16px; color: #fff;">{{ sub['offer_name'] }}</b>
+      <p style="color: #ffc107; font-size: 14px; margin: 5px 0; font-weight: bold;">
+        Invested Amount: ₹{{ "{:,}".format(sub['amount'] if 'amount' in sub else sub.get('deposit', 500)) }}
+      </p>
+      <small style="color: #28a745; display: block;">⚡ Daily Return: Auto Mode Active (Per Day Added)</small>
+      <small style="color: #aaa;">Started on: {{ sub['created_at'] }}</small>
     </div>
-    <div class="history-right">
-      <strong>₹{{ "{:,}".format(sub['amount'] if 'amount' in sub else sub.get('deposit', 0)) }}</strong>
-      <span class="pill success-pill">{{ sub['status'] }}</span>
+    <div class="history-right" style="text-align: right;">
+      <span class="pill success-pill" style="margin-bottom: 8px; display: inline-block;">{{ sub['status'] }}</span>
+      <p style="color: #aaa; font-size: 12px; margin: 0;">Duration: 10 Days</p>
     </div>
   </div>
   {% endfor %}
 {% else %}
-  <div class="empty"> Visit the home page to test an offer.</div>
+  <div class="empty" style="text-align: center; color: #888; padding: 20px;">
+    Aapne abhi koi subscription nahi liya hai. <a href="{{ url_for('dashboard') }}" style="color: #ffc107; text-decoration: underline;">Visit the home page to test an offer</a>
+  </div>
 {% endif %}
 </div>
 
 <div class="section-head"><div><h2>Transaction History</h2></div></div>
 <div class="table-card">
-{% if transactions %}
+{% if transactions and transactions|length > 0 %}
   {% for txn in transactions %}
   <div class="history-row">
     <div>
