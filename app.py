@@ -420,10 +420,50 @@ def submit_utr():
 
     if request.method == "POST":
         utr = request.form.get("utr", "").strip()
+        file = request.files.get("payment_screenshot")
 
         if not re.fullmatch(r"[0-9]{12}", utr):
             flash("Please enter a valid 12-digit UTR number.", "error")
             return render_template("utr.html", offer=offer)
+
+        filename = None
+        if file and file.filename != '':
+            # Secure filename and save to static/uploads/
+            from werkzeug.utils import secure_filename
+            filename = secure_filename(file.filename)
+            # Unique name banane ke liye timestamp ya random token jod sakte hain
+            filename = secrets.token_hex(4) + "_" + filename
+            
+            upload_folder = os.path.join(BASE_DIR, "static", "uploads")
+            os.makedirs(upload_folder, exist_ok=True)
+            file.save(os.path.join(upload_folder, filename))
+
+        with db() as con:
+            # Check if screenshot column exists in utr_submissions, if not add it dynamically
+            existing_cols = [row["name"] for row in con.execute("PRAGMA table_info(utr_submissions)").fetchall()]
+            if "screenshot" not in existing_cols:
+                con.execute("ALTER TABLE utr_submissions ADD COLUMN screenshot TEXT")
+
+            con.execute(
+                """INSERT INTO utr_submissions
+                (user_id, offer_id, utr, status, amount, screenshot)
+                VALUES (?, ?, ?, ?, ?, ?)""",
+                (
+                    current_user()["id"],
+                    offer_id,
+                    utr,
+                    "PENDING",
+                    offer["deposit"],
+                    filename
+                )
+            )
+
+        session.pop("pending_utr_offer", None)
+
+        flash("Demo UTR and payment screenshot submitted successfully. Verification Pending.", "success")
+        return redirect(url_for("wallet"))
+
+    return render_template("utr.html", offer=offer)
 
         
         with db() as con:
