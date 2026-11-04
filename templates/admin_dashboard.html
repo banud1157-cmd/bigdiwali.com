@@ -2,121 +2,136 @@
 {% block title %}Admin Dashboard • DIWALI OFFERS{% endblock %}
 {% block content %}
 <div class="checkout-wrap">
-  <div class="checkout-card" style="max-width: 900px; width: 100%;">
+  <div class="checkout-card" style="max-width: 950px; width: 100%;">
     <div class="eyebrow">ADMIN CONTROL PANEL</div>
     <h1>Admin Dashboard</h1>
     <a class="back-link" href="{{ url_for('admin_logout') }}">Admin Logout</a>
 
-    <div class="checkout-summary">
-      <div><small>Total Users</small><strong>{{ total_users }}</strong></div>
-      <div><small>UTR Records</small><strong>{{ total_utrs }}</strong></div>
+    <!-- Quick Statistics Summary -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+      <div class="checkout-summary" style="background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center;">
+        <small style="color: #aaa;">Total Users</small><br>
+        <strong style="font-size: 20px; color: #fff;">{{ total_users }}</strong>
+      </div>
+      <div class="checkout-summary" style="background: & #1a1a1a; padding: 15px; border-radius: 8px; text-align: center;">
+        <small style="color: #aaa;">UTR Records</small><br>
+        <strong style="font-size: 20px; color: #fff;">{{ total_utrs }}</strong>
+      </div>
+      <div class="checkout-summary" style="background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center;">
+        <small style="color: #aaa;">Withdrawals</small><br>
+        <strong style="font-size: 20px; color: #fff;">{{ total_withdrawals }}</strong>
+      </div>
+      <div class="checkout-summary" style="background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center;">
+        <small style="color: #aaa;">Transactions</small><br>
+        <strong style="font-size: 20px; color: #fff;">{{ total_transactions }}</strong>
+      </div>
     </div>
 
-    <div class="checkout-summary">
-      <div><small>Withdrawal Requests</small><strong>{{ total_withdrawals }}</strong></div>
-      <div><small>Transactions</small><strong>{{ total_transactions }}</strong></div>
-    </div>
-
-    <h2>Registered Users & Wallet Control</h2>
-
+    <!-- SECTION 1: REGISTERED USERS & WALLET CONTROL -->
+    <h2 style="margin-top: 30px; border-bottom: 2px solid #333; padding-bottom: 8px;">Registered Users & Wallet Control</h2>
+    
     {% for user in users %}
-    <div class="checkout-summary" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; background: #1a1a1a; padding: 15px; border-radius: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; background: #1a1a1a; padding: 18px; border-radius: 8px; border: 1px solid #333;">
         <div>
-            <strong style="font-size: 16px; color: #fff;">{{ user.name }}</strong><br>
-            <small style="color: #aaa;">Mobile: {{ user.mobile }}</small><br>
-            <small style="color: #aaa;">Referral: {{ user.referral_code }}</small><br>
+            <strong style="font-size: 18px; color: #fff;">{{ user.name }}</strong> <small style="color: #888;">(#{{ user.id }})</small><br>
+            <span style="color: #ffc107; font-size: 15px;">Mobile: {{ user.mobile }}</span><br>
+            <small style="color: #aaa;">Referral Code: <b>{{ user.referral_code }}</b></small><br>
             <small style="color: #aaa;">Joined: {{ user.created_at }}</small><br>
-            <strong style="color: #ffc107;">Wallet: ₹{{ user.demo_wallet }}</strong><br>
-            <small style="color: #888;">User ID: #{{ user.id }}</small>
+            <div style="margin-top: 6px;">
+                <span style="color: #aaa;">Wallet Balance:</span> <strong style="color: #28a745; font-size: 16px;">₹{{ user.demo_wallet }}</strong>
+            </div>
         </div>
 
-        <form method="POST" action="{{ url_for('admin_update_wallet', user_id=user.id) }}" style="display: flex; gap: 8px; align-items: center;">
-            <input type="number" name="amount" placeholder="Amount" min="1" required style="width: 100px; padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
-            <select name="action" style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+        <!-- Manual Wallet Control Form -->
+        <form method="POST" action="{{ url_for('admin_update_wallet', user_id=user.id) }}" style="display: flex; gap: 8px; align-items: center; background: #252238; padding: 10px; border-radius: 6px;">
+            <input type="number" name="amount" placeholder="Amount" min="1" required style="width: 90px; padding: 6px; background: #1a1a1a; color: #fff; border: 1px solid #555; border-radius: 4px;">
+            <select name="action" style="padding: 6px; background: #1a1a1a; color: #fff; border: 1px solid #555; border-radius: 4px;">
                 <option value="add">Add (+)</option>
                 <option value="deduct">Deduct (-)</option>
             </select>
-            <button class="btn success" type="submit" style="padding: 6px 12px;">Update Wallet</button>
+            <button class="btn success" type="submit" style="padding: 6px 12px; cursor: pointer;">Update</button>
         </form>
     </div>
     {% else %}
-    <p>No users found.</p>
+    <p style="color: #888;">No users found.</p>
     {% endfor %}
 
-    <h2>UTR Records & Payment Proofs</h2>
+    <!-- SECTION 2: UTR RECORDS & PAYMENT PROOFS -->
+    <h2 style="margin-top: 35px; border-bottom: 2px solid #333; padding-bottom: 8px;">UTR Records & Payment Proofs</h2>
 
     {% for item in utrs %}
-    <div class="checkout-summary" style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; align-items: flex-start;">
-        <div style="flex: 1; min-width: 250px; margin-bottom: 10px;">
-            <strong style="color: #fff; font-size: 16px;">{{ item.name }} ({{ item.mobile }})</strong><br>
-            <small style="color: #aaa;">UTR: {{ item.utr }}</small><br>
-            <small style="color: #aaa;">Offer: {{ item.offer_id }}</small><br>
-            <strong style="color: #ffc107;">Amount: ₹{{ item.amount }}</strong><br>
-            <small style="color: #28a745;">Status: {{ item.status }}</small><br>
-            <small style="color: #888;">{{ item.created_at }}</small>
+    <div style="background: #1a1a1a; padding: 18px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; align-items: flex-start; border: 1px solid #333;">
+        <div style="flex: 1; min-width: 260px;">
+            <strong style="color: #fff; font-size: 16px;">{{ item.name }}</strong> <span style="color: #aaa;">({{ item.mobile }})</span><br>
+            <small style="color: #aaa;">UTR Number: <code style="color: #ffc107;">{{ item.utr }}</code></small><br>
+            <small style="color: #aaa;">Offer ID: {{ item.offer_id }}</small><br>
+            <strong style="color: #ffc107; display: block; margin-top: 4px;">Deposit Amount: ₹{{ item.amount }}</strong>
+            <small style="color: #28a745; display: block; margin-top: 2px;">Status: <b>{{ item.status }}</b></small>
+            <small style="color: #888; display: block; margin-top: 2px;">Submitted: {{ item.created_at }}</small>
 
-            <!-- Payment Screenshot Preview -->
-            {% if item.screenshot %}
-            <div style="margin-top: 10px;">
-                <small style="color: #aaa; display: block; margin-bottom: 3px;">Payment Screenshot:</small>
+            <!-- Payment Screenshot Container -->
+            <div style="margin-top: 12px; padding-top: 8px; border-top: 1px dashed #444;">
+                <small style="color: #aaa; display: block; margin-bottom: 5px;">Payment Screenshot Proof:</small>
+                {% if item.screenshot %}
                 <a href="{{ url_for('static', filename='uploads/' + item.screenshot) }}" target="_blank">
-                    <img src="{{ url_for('static', filename='uploads/' + item.screenshot) }}" alt="Payment Proof" style="width: 100px; height: auto; border-radius: 4px; border: 1px solid #555; cursor: pointer;">
+                    <img src="{{ url_for('static', filename='uploads/' + item.screenshot) }}" alt="Payment Proof" style="width: 120px; height: auto; border-radius: 6px; border: 1px solid #555; cursor: pointer; object-fit: cover;">
                 </a>
-                <br><small style="color: #888; font-size: 11px;">(Click image to view full size)</small>
+                <br><small style="color: #4da6ff; font-size: 11px;">🔍 Click image to view full screen</small>
+                {% else %}
+                <span style="color: #e74c3c; font-size: 13px;">⚠️ No screenshot uploaded by user.</span>
+                {% endif %}
             </div>
-            {% else %}
-            <div style="margin-top: 10px;">
-                <small style="color: #888;">No screenshot uploaded.</small>
-            </div>
-            {% endif %}
         </div>
 
-        <form method="POST" action="{{ url_for('admin_update_utr', utr_id=item.id) }}" style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 220px;">
-            <label style="color: #aaa; font-size: 12px;">UTR Number</label>
-            <input type="text" name="utr" value="{{ item.utr }}" maxlength="12" required style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+        <!-- UTR Verification Form -->
+        <form method="POST" action="{{ url_for('admin_update_utr', utr_id=item.id) }}" style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 220px; background: #252238; padding: 12px; border-radius: 6px;">
+            <label style="color: #aaa; font-size: 12px;">Edit UTR Number</label>
+            <input type="text" name="utr" value="{{ item.utr }}" maxlength="12" required style="padding: 6px; background: #1a1a1a; color: #fff; border: 1px solid #555; border-radius: 4px;">
             
-            <label style="color: #aaa; font-size: 12px;">Demo Amount (₹)</label>
-            <input type="number" name="amount" value="{{ item.amount }}" min="0" max="100000" required style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
+            <label style="color: #aaa; font-size: 12px;">Edit Demo Amount (₹)</label>
+            <input type="number" name="amount" value="{{ item.amount }}" min="0" max="100000" required style="padding: 6px; background: #1a1a1a; color: #fff; border: 1px solid #555; border-radius: 4px;">
             
-            <label style="color: #aaa; font-size: 12px;">Status</label>
-            <select name="status" style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
-                <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
-                <option value="VERIFIED" {% if item.status == 'VERIFIED' %}selected{% endif %}>Verified</option>
-                <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+            <label style="color: #aaa; font-size: 12px;">Update Status</label>
+            <select name="status" style="padding: 6px; background: #1a1a1a; color: #fff; border: 1px solid #555; border-radius: 4px;">
+                <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>PENDING</option>
+                <option value="VERIFIED" {% if item.status == 'VERIFIED' %}selected{% endif %}>VERIFIED</option>
+                <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>REJECTED</option>
             </select>
 
-            <button class="btn success" type="submit" style="margin-top: 5px;">Save Changes</button>
+            <button class="btn success" type="submit" style="margin-top: 5px; padding: 8px; cursor: pointer;">Save UTR Changes</button>
         </form>
     </div>
     {% else %}
-    <p>No UTR records found.</p>
+    <p style="color: #888;">No UTR records found.</p>
     {% endfor %}
 
-    <h2>Withdrawal Requests</h2>
+    <!-- SECTION 3: WITHDRAWAL REQUESTS -->
+    <h2 style="margin-top: 35px; border-bottom: 2px solid #333; padding-bottom: 8px;">Withdrawal Requests</h2>
+    
     {% for item in withdrawals %}
-      <div class="checkout-summary" style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+      <div style="background: #1a1a1a; padding: 18px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border: 1px solid #333;">
         <div>
-          <strong style="color: #fff;">{{ item.name }} ({{ item.mobile }})</strong><br>
-          <strong style="color: #ffc107;">₹{{ item.amount }}</strong><br>
-          <small style="color: #aaa;">Note: {{ item.note or 'None' }}</small><br>
-          <small style="color: #28a745;">Status: {{ item.status }}</small><br>
-          <small style="color: #888;">{{ item.created_at }}</small>
+          <strong style="color: #fff; font-size: 16px;">{{ item.name }}</strong> <span style="color: #aaa;">({{ item.mobile }})</span><br>
+          <strong style="color: #ffc107; font-size: 16px;">Amount: ₹{{ item.amount }}</strong><br>
+          <small style="color: #aaa;">Note / Details: {{ item.note or 'None' }}</small><br>
+          <small style="color: #28a745;">Status: <b>{{ item.status }}</b></small> | <small style="color: #888;">{{ item.created_at }}</small>
         </div>
-        <form method="POST" action="{{ url_for('admin_update_withdrawal', request_id=item.id) }}" style="display: flex; gap: 8px; align-items: center;">
-          <select name="status" style="padding: 6px; background: #252238; color: #fff; border: 1px solid #555; border-radius: 4px;">
-            <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>Pending</option>
+        
+        <form method="POST" action="{{ url_for('admin_update_withdrawal', request_id=item.id) }}" style="display: flex; gap: 8px; align-items: center; background: #252238; padding: 8px; border-radius: 6px;">
+          <select name="status" style="padding: 6px; background: #1a1a1a; color: #fff; border: 1px solid #555; border-radius: 4px;">
+            <option value="PENDING" {% if item.status == 'PENDING' %}selected{% endif %}>PENDING</option>
             <option value="APPROVED" {% if item.status == 'APPROVED' %}selected{% endif %}>APPROVED</option>
-            <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+            <option value="REJECTED" {% if item.status == 'REJECTED' %}selected{% endif %}>REJECTED</option>
           </select>
-          <button class="btn success" type="submit" style="padding: 6px 12px;">Update</button>
+          <button class="btn success" type="submit" style="padding: 6px 12px; cursor: pointer;">Update</button>
         </form>
       </div>
     {% else %}
-      <p>No withdrawal requests found.</p>
+      <p style="color: #888;">No withdrawal requests found.</p>
     {% endfor %}
 
-    <p class="muted" style="margin-top: 20px;">
-      Demo only: Approved status does not transfer money or verify a real payment.
+    <p class="muted" style="margin-top: 30px; text-align: center; color: #666; font-size: 12px;">
+      Demo System Control Panel • All user wallets and payment proofs operate independently.
     </p>
   </div>
 </div>
