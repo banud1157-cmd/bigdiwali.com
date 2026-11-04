@@ -8,12 +8,10 @@
   <span class="pill">WALLET</span>
 </div>
 
-<div class="wallet-hero">
-  <small>AVAILABLE CREDITS</small>
-  <strong>₹{{ "{:,}".format(user['demo_wallet'] if 'demo_wallet' in user else 0) }}</strong>
-  <p style="margin-top: 10px;">
-    <a class="btn success" href="{{ url_for('withdraw') }}" style="display: inline-block; padding: 6px 15px; text-decoration: none; border-radius: 4px;">Withdrawal</a>
-  </p>
+<!-- Wallet Balance Display -->
+<div class="checkout-summary">
+  <div class="eyebrow">AVAILABLE CREDITS</div>
+  <strong style="font-size: 28px; color: #ffc107;">₹{{ user.demo_wallet }}</strong>
 </div>
 
 <div class="section-head"><div><h2>My Subscriptions</h2></div></div>
