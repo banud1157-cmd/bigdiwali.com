@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} Wallet • DIWALI OFFERS{% endblock %}
+{% block title %}My Wallet • DIWALI OFFERS{% endblock %}
 
 {% block content %}
 <div class="section-head">
@@ -7,56 +7,62 @@
     <div class="eyebrow">YOUR SAMPLE ACCOUNT</div>
     <h1>My Wallet</h1>
   </div>
-  <span class="pill"> WALLET</span>
+  <span class="pill">WALLET</span>
 </div>
 
-<div class="wallet-hero">
-  <small>AVAILABLE CREDITS</small>
-  <strong>₹{{ "{:,}".format(user['demo_wallet']) }}</strong>
-  <p></p>
+<!-- Available Credits Card -->
+<div class="wallet-card" style="background: #1e1b2e; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+  <small style="color: #aaa; text-transform: uppercase; font-size: 12px;">Available Credits</small>
+  <div style="font-size: 36px; font-weight: bold; color: #ffc107; margin: 10px 0;">₹{{ "{:,}".format(user.credits if user and 'credits' in user else 1200) }}</div>
+  <a href="{{ url_for('withdrawal') }}" class="btn primary" style="display: inline-block; padding: 8px 16px; background: #28a745; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Withdrawal</a>
 </div>
 
-<!-- Withdrawal Button Section -->
-<div style="margin-bottom: 20px;">
-  <a class="btn success" href="{{ url_for('withdraw') }}">
-    Withdrawal
-  </a>
+<!-- My Subscriptions Section -->
+<div class="section-head" style="margin-top: 20px;">
+  <h2>My Subscriptions</h2>
 </div>
 
-<div class="section-head">
-  <div><h2>My Subscriptions</h2></div>
-</div>
-
-<div class="table-card">
-{% if subscriptions %}
-  {% for sub in subscriptions %}
-  <div class="history-row">
-    <div><b>{{ sub['offer_name'] }}</b><small>{{ sub['created_at'] }}</small></div>
-    <span class="pill success-pill">{{ sub['status'] }}</span>
-  </div>
-  {% endfor %}
-{% else %}
-  <div class="empty"> Visit the home page to test an offer.</div>
-{% endif %}
-</div>
-
-<div class="section-head">
-  <div><h2>Transaction History</h2></div>
-</div>
-
-<div class="table-card">
-{% if transactions %}
-  {% for txn in transactions %}
-  <div class="history-row">
-    <div><b>{{ txn['description'] }}</b><small>{{ txn['created_at'] }}</small></div>
-    <div class="history-right">
-      <strong>₹{{ "{:,}".format(txn['amount']) }}</strong>
-      <small>{{ txn['status'] }}</small>
+<div class="subscriptions-card" style="background: #1a1a1a; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #333;">
+  {% if subscriptions and subscriptions|length > 0 %}
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+      {% for sub in subscriptions %}
+        <div style="background: #252238; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #28a745;">
+          <div>
+            <strong style="font-size: 16px; color: #fff;">{{ sub.offer_name }}</strong>
+            <p style="color: #aaa; font-size: 13px; margin: 5px 0 0 0;">Duration: {{ sub.days }} days | Status: <span style="color: #28a745; font-weight: bold;">Active</span></p>
+          </div>
+          <div style="text-align: right;">
+            <span style="font-size: 16px; font-weight: bold; color: #ffc107;">₹{{ "{:,}".format(sub.amount) }}</span>
+          </div>
+        </div>
+      {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-{% else %}
-  <div class="empty">No demo transactions recorded.</div>
-{% endif %}
+  {% else %}
+    <p class="muted" style="text-align: center; color: #888; padding: 15px;">Aapne abhi koi subscription nahi liya hai. <a href="{{ url_for('dashboard') }}" style="color: #ffc107; text-decoration: underline;">Visit the home page to test an offer</a></p>
+  {% endif %}
+</div>
+
+<!-- Transaction History Section -->
+<div class="section-head" style="margin-top: 20px;">
+  <h2>Transaction History</h2>
+</div>
+
+<div class="transaction-history" style="background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333;">
+  {% if transactions and transactions|length > 0 %}
+    {% for tx in transactions %}
+      <div style="padding: 10px 0; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong style="color: #fff; font-size: 14px;">{{ tx.description }}</strong>
+          <p style="color: #888; font-size: 12px; margin: 2px 0 0 0;">{{ tx.date }}</p>
+        </div>
+        <div style="text-align: right;">
+          <span style="font-weight: bold; color: {{ '#28a745' if tx.status == 'SUCCESS' else '#dc3545' }};">₹{{ "{:,}".format(tx.amount) }}</span>
+          <p style="font-size: 11px; color: #888; margin: 2px 0 0 0;">{{ tx.status }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted" style="text-align: center; color: #888; padding: 10px;">No transactions yet.</p>
+  {% endif %}
 </div>
 {% endblock %}
