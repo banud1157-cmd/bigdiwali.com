@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import sqlite3
 import os
@@ -6,6 +5,7 @@ import re
 import secrets
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "diwali_demo.db")
@@ -15,8 +15,7 @@ app.secret_key = os.environ.get(
     "SECRET_KEY", "local-demo-change-this-secret-key"
 )
 
-# Local  admin credentials.
-# Change these before putting the website online.
+# Local admin credentials.
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "ChangeMe123!")
 
@@ -33,7 +32,6 @@ def db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
-
 
 
 def init_db():
@@ -73,6 +71,7 @@ def init_db():
             offer_id TEXT NOT NULL,
             utr TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'PENDING',
+            screenshot TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )""")
 
@@ -85,116 +84,15 @@ def init_db():
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )""")
 
-        # Add amount column to UTR table
+        # Add amount column to UTR table if missing
         existing_utr_columns = [
-            row["name"]
-            for row in con.execute(
-                "PRAGMA table_info(utr_submissions)"
-            ).fetchall()
+            row["name"] for row in con.execute("PRAGMA table_info(utr_submissions)").fetchall()
         ]
-
         if "amount" not in existing_utr_columns:
-            con.execute(
-                "ALTER TABLE utr_submissions ADD COLUMN amount INTEGER NOT NULL DEFAULT 0"
-            )
+            con.execute("ALTER TABLE utr_submissions ADD COLUMN amount INTEGER NOT NULL DEFAULT 0")
 
-        # Fill demo amounts for older UTR records
-        con.execute("""
-            UPDATE utr_submissions
-            SET amount = CASE offer_id
-                WHEN 'offer1' THEN 500
-                WHEN 'offer2' THEN 1000
-                WHEN 'offer3' THEN 1500
-                WHEN 'offer4' THEN 2000
-                WHEN 'offer5' THEN 5000
-                ELSE 0
-            END
-            WHERE amount = 0
-        """)
-
-        # Add bank details columns to withdrawals table
-        columns = [
-            "account_holder TEXT",
-            "bank_name TEXT",
-            "account_number TEXT",
-            "ifsc_code TEXT"
-        ]
-
-        existing_columns = [
-            row["name"]
-            for row in con.execute(
-                "PRAGMA table_info(withdrawals)"
-            ).fetchall()
-        ]
-
-        for column in columns:
-            column_name = column.split()[0]
-
-            if column_name not in existing_columns:
-                con.execute(
-                    f"ALTER TABLE withdrawals ADD COLUMN {column}"
-                )
-
-        
-        # Add amount column to existing UTR records
-        existing_utr_columns = [
-            row["name"]
-            for row in con.execute(
-                "PRAGMA table_info(utr_submissions)"
-            ).fetchall()
-        ]
-
-        if "amount" not in existing_utr_columns:
-            con.execute(
-                "ALTER TABLE utr_submissions ADD COLUMN amount INTEGER NOT NULL DEFAULT 0"
-            )
-
-        # Fill demo amounts for older UTR records
-        con.execute("""
-            UPDATE utr_submissions
-            SET amount = CASE offer_id
-                WHEN 'offer1' THEN 500
-                WHEN 'offer2' THEN 1000
-                WHEN 'offer3' THEN 1500
-                WHEN 'offer4' THEN 2000
-                WHEN 'offer5' THEN 5000
-                ELSE 0
-            END
-            WHERE amount = 0
-        """)
-
-
-        # New table:  withdrawal requests only
-        con.execute("""CREATE TABLE IF NOT EXISTS withdrawals (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            amount INTEGER NOT NULL,
-            note TEXT,
-            status TEXT NOT NULL DEFAULT 'PENDING',
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )""")
-
-        
-        # Add bank detail columns to existing withdrawals table
-        columns = [
-            "account_holder TEXT",
-            "bank_name TEXT",
-            "account_number TEXT",
-            "ifsc_code TEXT"
-        ]
-
-        existing_columns = [
-            row["name"]
-            for row in con.execute("PRAGMA table_info(withdrawals)").fetchall()
-        ]
-
-        for column in columns:
-            column_name = column.split()[0]
-            if column_name not in existing_columns:
-                con.execute(
-                    f"ALTER TABLE withdrawals ADD COLUMN {column}"
-                )
-
+        if "screenshot" not in existing_utr_columns:
+            con.execute("ALTER TABLE utr_submissions ADD COLUMN screenshot TEXT")
 
 
 def current_user():
@@ -247,10 +145,7 @@ def register():
         referral = request.form.get("referral", "").strip().upper() or None
 
         if len(name) < 2 or len(mobile) != 10 or len(password) < 6:
-            flash(
-                "Name, 10-digit mobile number aur minimum 6-character password enter karein.",
-                "error"
-            )
+            flash("Name, 10-digit mobile number aur minimum 6-character password enter karein.", "error")
             return render_template("register.html")
 
         with db() as con:
@@ -270,8 +165,8 @@ def register():
 
             cur = con.execute(
                 """INSERT INTO users
-                (name, mobile, password_hash, referral_code, referred_by)
-                VALUES (?, ?, ?, ?, ?)""",
+                (name, mobile, password_hash, referral_code, referred_by, demo_wallet)
+                VALUES (?, ?, ?, ?, ?, 0)""",
                 (name, mobile, generate_password_hash(password), code, referral)
             )
             user_id = cur.lastrowid
@@ -403,6 +298,7 @@ def simulate_payment():
     flash("Demo payment failed. Wallet update nahi hua.", "error")
     return redirect(url_for("wallet"))
 
+
 @app.route("/submit-utr", methods=["GET", "POST"])
 @login_required
 def submit_utr():
@@ -427,10 +323,7 @@ def submit_utr():
 
         filename = None
         if file and file.filename != '':
-            # Secure filename and save to static/uploads/
-            from werkzeug.utils import secure_filename
             filename = secure_filename(file.filename)
-            # Unique name banane ke liye timestamp ya random token jod sakte hain
             filename = secrets.token_hex(4) + "_" + filename
             
             upload_folder = os.path.join(BASE_DIR, "static", "uploads")
@@ -438,11 +331,6 @@ def submit_utr():
             file.save(os.path.join(upload_folder, filename))
 
         with db() as con:
-            # Check if screenshot column exists in utr_submissions, if not add it dynamically
-            existing_cols = [row["name"] for row in con.execute("PRAGMA table_info(utr_submissions)").fetchall()]
-            if "screenshot" not in existing_cols:
-                con.execute("ALTER TABLE utr_submissions ADD COLUMN screenshot TEXT")
-
             con.execute(
                 """INSERT INTO utr_submissions
                 (user_id, offer_id, utr, status, amount, screenshot)
@@ -464,30 +352,6 @@ def submit_utr():
 
     return render_template("utr.html", offer=offer)
 
-        with db() as con:
-            con.execute(
-                """INSERT INTO utr_submissions
-                (user_id, offer_id, utr, status, amount)
-                VALUES (?, ?, ?, ?, ?)""",
-                (
-                    current_user()["id"],
-                    offer_id,
-                    utr,
-                    "PENDING",
-                    offer["deposit"]
-                )
-            )
-
-
-        session.pop("pending_utr_offer", None)
-
-        flash(
-            "Demo UTR submitted successfully. Verification Pending.",
-            "success"
-        )
-        return redirect(url_for("wallet"))
-
-    return render_template("utr.html", offer=offer)
 
 @app.route("/referral")
 @login_required
@@ -495,15 +359,10 @@ def referral():
     return render_template("referral.html", user=current_user())
 
 
-# ---------------- DEMO WITHDRAWAL ----------------
-
-
 @app.route("/withdraw", methods=["GET", "POST"])
 @login_required
 def withdraw():
     user = current_user()
-
-    # Only these fixed  withdrawal amounts are allowed
     allowed_amounts = [500, 1000, 2000, 5000, 10000]
 
     if request.method == "POST":
@@ -528,10 +387,7 @@ def withdraw():
                 (user["id"], amount, note[:200])
             )
 
-        flash(
-            " withdrawal request submit ho gayi. Wait 24 Hour.",
-            "success"
-        )
+        flash("Withdrawal request submit ho gayi. Wait 24 Hour.", "success")
         return redirect(url_for("withdraw"))
 
     with db() as con:
@@ -547,8 +403,6 @@ def withdraw():
         withdrawals=requests_list
     )
 
-
-# ---------------- ADMIN LOGIN & DASHBOARD ----------------
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():
@@ -577,7 +431,7 @@ def admin_login():
 def admin_dashboard():
     with db() as con:
         users = con.execute(
-            """SELECT id, name, mobile, referral_code, created_at
+            """SELECT id, name, mobile, referral_code, demo_wallet, created_at
             FROM users ORDER BY id DESC"""
         ).fetchall()
 
@@ -595,21 +449,10 @@ def admin_dashboard():
             ORDER BY withdrawals.id DESC"""
         ).fetchall()
 
-        total_users = con.execute(
-            "SELECT COUNT(*) FROM users"
-        ).fetchone()[0]
-
-        total_utrs = con.execute(
-            "SELECT COUNT(*) FROM utr_submissions"
-        ).fetchone()[0]
-
-        total_withdrawals = con.execute(
-            "SELECT COUNT(*) FROM withdrawals"
-        ).fetchone()[0]
-
-        total_transactions = con.execute(
-            "SELECT COUNT(*) FROM transactions"
-        ).fetchone()[0]
+        total_users = con.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        total_utrs = con.execute("SELECT COUNT(*) FROM utr_submissions").fetchone()[0]
+        total_withdrawals = con.execute("SELECT COUNT(*) FROM withdrawals").fetchone()[0]
+        total_transactions = con.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
 
     return render_template(
         "admin_dashboard.html",
@@ -621,7 +464,6 @@ def admin_dashboard():
         total_withdrawals=total_withdrawals,
         total_transactions=total_transactions
     )
-
 
 
 @app.route("/admin/utr/<int:utr_id>", methods=["POST"])
@@ -663,6 +505,7 @@ def admin_update_utr(utr_id):
 
     flash("Demo UTR number, amount and status updated.", "success")
     return redirect(url_for("admin_dashboard"))
+
 
 @app.route("/admin/wallet/<int:user_id>", methods=["POST"])
 @admin_required
@@ -710,7 +553,6 @@ def admin_update_wallet(user_id):
     return redirect(url_for("admin_dashboard"))
 
 
-
 @app.route("/admin/withdrawal/<int:request_id>", methods=["POST"])
 @admin_required
 def admin_update_withdrawal(request_id):
@@ -726,7 +568,7 @@ def admin_update_withdrawal(request_id):
             (status, request_id)
         )
 
-    flash("Demo withdrawal status update ho gaya. Koi paisa transfer nahi hua.", "success")
+    flash("Demo withdrawal status update ho gaya.", "success")
     return redirect(url_for("admin_dashboard"))
 
 
@@ -740,7 +582,6 @@ def admin_logout():
 def health():
     return jsonify(status="ok", mode="demo")
 
-import os
 
 if __name__ == "__main__":
     init_db()
