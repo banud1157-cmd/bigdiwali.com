@@ -20,6 +20,7 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "ChangeMe123!")
 
 OFFERS = [
+    {"id": "offer0", "name": "Pocket Spark", "deposit": 200, "daily": 75, "days": 10, "image": "diwali1.svg", "tag": "STARTER PICK"},
     {"id": "offer1", "name": "Diwali Spark", "deposit": 500, "daily": 300, "days": 10, "image": "diwali1.svg", "tag": "FESTIVE PICK"},
     {"id": "offer2", "name": "Golden Glow", "deposit": 1000, "daily": 500, "days": 15, "image": "diwali2.svg", "tag": "POPULAR"},
     {"id": "offer3", "name": "Mega Celebration", "deposit": 1500, "daily": 1500, "days": 15, "image": "diwali3.svg", "tag": "MEGA DEMO"},
