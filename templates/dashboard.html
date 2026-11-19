@@ -325,8 +325,13 @@
           <div class="corner-tag">{{ offer.tag if offer.tag else 'Popular' }}</div>
           <div class="card-row">
             <div class="card-img-box">
-              <img src="{{ url_for('static', filename='images/' + offer.image) }}" alt="{{ offer.name }}">
-            </div>
+  {% set fallback_img = 'plan' ~ loop.index ~ '.png' if loop.index <= 4 else 'plan1.png' %}
+  <img
+    src="{{ url_for('static', filename='images/' + (offer.image if offer.image else fallback_img)) }}"
+    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/' + fallback_img) }}';"
+    alt="{{ offer.name }}"
+  >
+</div>
             <div class="card-details">
               <div class="card-title">{{ offer.name }} ({{ offer.days }} days)</div>
               <div class="card-price">₹{{ "{:,}".format(offer.deposit) }}</div>
