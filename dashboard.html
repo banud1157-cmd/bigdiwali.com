@@ -1,33 +1,441 @@
-{% extends "base.html" %}{% block title %}Home • DIWALI OFFERS{% endblock %}
+{% extends "base.html" %}
+{% block title %}Home • Plan Dashboard{% endblock %}
+
 {% block content %}
-<section class="welcome-row"><div><div class="eyebrow">WELCOME TO THE FESTIVAL</div><h1>Hello, {{ user['name'] }} <span class="gold">✦</span></h1><p class="muted">Your dashboard is ready.</p></div><div class="wallet-chip"><small> WALLET</small><strong>₹{{ "{:,}".format(user['demo_wallet']) }}</strong><a href="{{ url_for('wallet') }}">View wallet →</a></div></section>
-<section class="hero-banner"><div class="hero-copy"><div class="eyebrow">LIGHTS • JOY • CELEBRATION</div><h2>Diwali Mega<br><span>Festive Offers</span></h2><p>Explore five interactive sample plans. Everything here is simulated.</p><a class="btn light" href="#offers">Explore Offers</a></div><div class="hero-orb">दीपावली<br><b>✦</b></div></section>
-<div class="section-head" id="offers"><div><div class="eyebrow">CHOOSE YOUR EXPERIENCE</div><h2>Diwali Offers</h2></div></span></div>
-<div class="offer-grid">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+<style>
+  .new-dash-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 12px 0 24px;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
 
+  .top-welcome-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+  }
 
-{% for offer in offers %}
-<article class="offer-card">
-  <div class="offer-image {{ offer.id }}"><img
-  src="{{ url_for('static', filename='images/vip_plan1.jpg') }}"
-  alt="VIP Plan 1"
-/><span class="offer-tag">{{ offer.tag }}</span></div>
-  <div class="offer-body"><h3>{{ offer.name }}</h3><div class="amount-line"><div><small>Sample amount</small><strong>₹{{ "{:,}".format(offer.deposit) }}</strong></div><div class="daily"><small>Per days</small><strong>₹{{ "{:,}".format(offer.daily) }}</strong></div></div><div class="offer-meta"><span>{{ offer.days }} days</span><span>Valid plan</span></div><a class="btn primary full" href="{{ url_for('checkout', offer_id=offer.id) }}">View Demo Plan</a></div>
-</article>
-{% endfor %}
-</div>
-  
-<div class="checkout-card">
-    <h2>My Wallet</h2>
-    <p>Manage your withdrawal requests.</p>
+  .top-welcome-box h1 {
+    margin: 2px 0;
+    font-size: 22px;
+    color: #0f172a;
+  }
 
-    
-    <a href="{{ url_for('withdraw') }}" class="btn success">
-         Withdrawal
+  .top-welcome-box p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .wallet-badge {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 10px 14px;
+    text-align: right;
+  }
+
+  .wallet-badge small {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1e40af;
+    letter-spacing: 0.5px;
+  }
+
+  .wallet-badge strong {
+    display: block;
+    font-size: 18px;
+    color: #0f172a;
+    margin: 2px 0;
+  }
+
+  .wallet-badge a {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+
+  /* Normal Plan / VIP Plan Switcher */
+  .plan-switcher {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid #dbeafe;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .plan-tab-btn {
+    border: none;
+    background: transparent;
+    color: #1e3a8a;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 10px 12px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .plan-tab-btn.active {
+    background: #1d4ed8;
+    color: #ffffff;
+  }
+
+  .plan-group {
+    display: none;
+  }
+
+  .plan-group.active {
+    display: block;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media (min-width: 720px) {
+    .cards-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Card Design */
+  .item-plan-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+    overflow: hidden;
+  }
+
+  .corner-tag {
+    position: absolute;
+    top: 12px;
+    right: -28px;
+    background: #1d4ed8;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 34px;
+    transform: rotate(35deg);
+  }
+
+  .corner-tag.vip-badge {
+    background: #b45309;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .card-img-box {
+    width: 112px;
+    height: 112px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #dbeafe;
+    background: #f1f5f9;
+    flex-shrink: 0;
+  }
+
+  .card-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-details {
+    flex: 1;
+    padding-right: 10px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-bottom: 3px;
+  }
+
+  .card-price {
+    font-size: 23px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+  }
+
+  .metric-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border-radius: 7px;
+    padding: 5px 8px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .metric-box span {
+    color: #475569;
+    font-weight: 600;
+  }
+
+  .metric-box strong {
+    color: #1d4ed8;
+    font-weight: 800;
+  }
+
+  .buy-now-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 12px;
+    background: #1d4ed8;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: 9px;
+    transition: background 0.2s ease;
+  }
+
+  .buy-now-btn:hover {
+    background: #1e40af;
+  }
+
+  .action-strip {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .action-strip h2 {
+    margin: 0 0 2px;
+    font-size: 17px;
+    color: #0f172a;
+  }
+
+  .action-strip p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .withdraw-link-btn {
+    text-decoration: none;
+    background: #0f766e;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 9px 16px;
+    border-radius: 8px;
+  }
+
+  .footer-links-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  @media (min-width: 640px) {
+    .footer-links-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .quick-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #0f172a;
+  }
+
+  .quick-card small {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+</style>
+
+<div class="new-dash-wrap">
+  <!-- User & Wallet Header -->
+  <div class="top-welcome-box">
+    <div>
+      <small style="font-weight:700; color:#1d4ed8;">PLAN DASHBOARD</small>
+      <h1>Hello, {{ user['name'] }}</h1>
+      <p>Simulated UI layout • {{ offers|length }} sample plans available</p>
+    </div>
+    <div class="wallet-badge">
+      <small>WALLET</small>
+      <strong>₹{{ "{:,}".format(user['demo_wallet']) }}</strong>
+      <a href="{{ url_for('wallet') }}">View wallet →</a>
+    </div>
+  </div>
+
+  <!-- Normal Plan / VIP Plan Tabs -->
+  <div class="plan-switcher">
+    <button type="button" class="plan-tab-btn active" id="tabNormalBtn" onclick="switchPlanTab('normal')">
+      Normal Plan
+    </button>
+    <button type="button" class="plan-tab-btn" id="tabVipBtn" onclick="switchPlanTab('vip')">
+      VIP Plan
+    </button>
+  </div>
+
+  <!-- Normal Plans Section -->
+  <div id="groupNormal" class="plan-group active">
+    <div class="cards-grid">
+      {% for offer in offers %}
+        {% set total_val = offer.daily * offer.days %}
+        {% set normal_img = 'plan' ~ (((loop.index - 1) % 4) + 1) ~ '.png' %}
+        <article class="item-plan-card">
+          <div class="corner-tag">{{ offer.tag if offer.tag else 'Popular' }}</div>
+          <div class="card-row">
+            <div class="card-img-box">
+              <img
+                src="{{ url_for('static', filename='images/' + normal_img) }}"
+                alt="{{ offer.name }}"
+              >
+            </div>
+            <div class="card-details">
+              <div class="card-title">{{ offer.name }} ({{ offer.days }} days)</div>
+              <div class="card-price">₹{{ "{:,}".format(offer.deposit) }}</div>
+              <div class="metric-box">
+                <span>Daily</span>
+                <strong>₹{{ "{:,}".format(offer.daily) }}</strong>
+              </div>
+              <div class="metric-box">
+                <span>Total</span>
+                <strong>₹{{ "{:,}".format(total_val) }}</strong>
+              </div>
+            </div>
+          </div>
+          <a class="buy-now-btn" href="{{ url_for('checkout', offer_id=offer.id) }}">Buy Now</a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- VIP Plans Section (Uses vip_plan1.jpg to vip_plan4.jpg) -->
+  <div id="groupVip" class="plan-group">
+    <div class="cards-grid">
+      {% for offer in offers %}
+        {% set vip_deposit = offer.deposit * 2 %}
+        {% set vip_daily = offer.daily * 2 %}
+        {% set vip_total = vip_daily * offer.days %}
+        {% set vip_img = 'vip_plan' ~ (((loop.index - 1) % 4) + 1) ~ '.jpg' %}
+        <article class="item-plan-card">
+          <div class="corner-tag vip-badge">VIP</div>
+          <div class="card-row">
+            <div class="card-img-box">
+              <img
+                src="{{ url_for('static', filename='images/' + vip_img) }}"
+                alt="VIP {{ offer.name }}"
+              >
+            </div>
+            <div class="card-details">
+              <div class="card-title">VIP {{ offer.name }} ({{ offer.days }} days)</div>
+              <div class="card-price">₹{{ "{:,}".format(vip_deposit) }}</div>
+              <div class="metric-box">
+                <span>Daily</span>
+                <strong>₹{{ "{:,}".format(vip_daily) }}</strong>
+              </div>
+              <div class="metric-box">
+                <span>Total</span>
+                <strong>₹{{ "{:,}".format(vip_total) }}</strong>
+              </div>
+            </div>
+          </div>
+          <a class="buy-now-btn" href="{{ url_for('checkout', offer_id=offer.id) }}">Buy Now</a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Existing Withdrawal Action -->
+  <div class="action-strip">
+    <div>
+      <h2>My Wallet</h2>
+      <p>Manage your withdrawal requests.</p>
+    </div>
+    <a href="{{ url_for('withdraw') }}" class="withdraw-link-btn">Withdrawal</a>
+  </div>
+
+  <!-- Existing Bottom Navigation Cards -->
+  <div class="footer-links-grid">
+    <a class="quick-card" href="{{ url_for('wallet') }}">
+      <div>
+        <b>◈ My Wallet</b>
+        <small>Sample balance & transaction history</small>
+      </div>
+      <span>→</span>
     </a>
+    <a class="quick-card" href="{{ url_for('referral') }}">
+      <div>
+        <b>♧ Refer & Earn</b>
+        <small>Sample referral code and points</small>
+      </div>
+      <span>→</span>
+    </a>
+  </div>
 </div>
 
-<div class=""><strong></strong></div>
-<section class="bottom-grid"><a class="mini-panel" href="{{ url_for('wallet') }}"><span>◈</span><div><b>My Wallet</b><small>Sample balance & transaction history</small></div>→</a><a class="mini-panel" href="{{ url_for('referral') }}"><span>♧</span><div><b>Refer & Earn</b><small>Sample referral code and points</small></div>→</a></section>
+<script>
+  function switchPlanTab(tabName) {
+    const normalGroup = document.getElementById("groupNormal");
+    const vipGroup = document.getElementById("groupVip");
+    const btnNormal = document.getElementById("tabNormalBtn");
+    const btnVip = document.getElementById("tabVipBtn");
+
+    if (tabName === "vip") {
+      vipGroup.classList.add("active");
+      normalGroup.classList.remove("active");
+      btnVip.classList.add("active");
+      btnNormal.classList.remove("active");
+    } else {
+      normalGroup.classList.add("active");
+      vipGroup.classList.remove("active");
+      btnNormal.classList.add("active");
+      btnVip.classList.remove("active");
+    }
+  }
+</script>
 {% endblock %}
